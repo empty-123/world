@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cyber Clicker 2099</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow: hidden;
+			user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+        }
+
+        #planet-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        #planet {
+            width: 200px;
+            height: 200px;
+            background-color: #0f0;
+            border-radius: 50%;
+            animation: pulse 1s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 10px #0f0;
+            }
+            100% {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px #0f0;
+            }
+        }
+
+        #click-counter-container {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #click-counter {
+            display: inline-block;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 18px;
+        }
+
+        #upgrade-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100vh;
+            background-color: #222;
+            padding: 20px;
+            text-align: left;
+            overflow-y: auto;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+
+        #upgrade-container h2 {
+            color: #0f0;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+		
+        .upgrade-container {
+            position: relative;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            background-color: #333;
+            cursor: pointer;
+            transition: background-color 0.3s;
+			 transition: background-color 0.3s, transform 0.3s;
+        }
+		
+		.upgrade-container:hover {
+			background-color: #777;
+			transform: scale(1.05);
+		}
+
+		.upgrade-container:active {
+			background-color: #999;
+			transform: scale(0.95);
+		}
+		
+        .upgrade {
+            color: #ff0;
+            font-size: 12px;
+            margin-bottom: 5px;
+            cursor: pointer;
+        }
+
+        .insufficient-clicks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 0, 0, 0.7);
+            padding: 10px;
+            font-size: 18px;
+            color: #fff;
+            display: none;
+        }
+
+        .smoke {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: smoke-move linear 5s;
+            opacity: 0;
+        }
+
+		.click-bubble {
+			position: absolute;
+			font-size: 20px;
+			color: white;
+		}
+
+        @keyframes smoke-move {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <div id="planet-container">
+            <div id="planet"></div>
+			 <div id="clicks-container"></div>
+        </div>
+        <div id="click-counter-container">
+            <div id="click-counter">Clicks: 0</div>
+        </div>
+        <div id="upgrade-container">
+            <h2>Upgrades</h2>
+            <div id="upgrade-list"></div>
+        </div>
+        <div class="insufficient-clicks">Insufficient clicks!</div>
+    </div>
+    <script>
+        var clicks = 0;
+        var clickCounter = document.getElementById('click-counter');
+        var planet = document.getElementById('planet');
+        var upgradeList = document.getElementById('upgrade-list');
+		var clicksContainer = document.getElementById('clicks-container');
+		var insufficientClicks = document.querySelector('.insufficient-clicks');
+		
+
+        planet.addEventListener('click', function() {
+            clicks++;
+            clickCounter.innerText = 'Clicks: ' + clicks;
+			
+		// Создаем новый элемент для клика
+            var clickBubble = document.createElement('div');
+            clickBubble.classList.add('click-bubble');
+            clickBubble.innerText = '+' + clicks;
+
+            // Устанавливаем случайные смещения по осям X и Y для элемента клика
+            var planetRect = planet.getBoundingClientRect();
+            var x = Math.random() * planetRect.width - planetRect.width / 2;
+            var y = Math.random() * planetRect.height - planetRect.height / 2;
+            clickBubble.style.left = event.clientX - planetRect.left + x + 'px';
+            clickBubble.style.top = event.clientY - planetRect.top + y + 'px';
+
+            // Добавляем элемент клика в контейнер планеты
+            planet.appendChild(clickBubble);
+
+            // Устанавливаем таймер для удаления элемента клика через 2 секунды
+            setTimeout(function() {
+                clickBubble.remove();
+            }, 2000);
+        });
+
+        function createUpgrade(name, cost, multiplier) {
+            var upgradeContainer = document.createElement('div');
+            upgradeContainer.className = 'upgrade-container';
+            upgradeContainer.addEventListener('click', function() {
+                if (clicks >= cost) {
+                    clicks -= cost;
+                    clickCounter.innerText = 'Clicks: ' + clicks;
+                    cost *= 2;
+                    upgrade.innerText = name + ' (Cost: ' + cost + ')';
+                    multiplier += 1;
+                    planet.addEventListener('click', function() {
+                        clicks += multiplier;
+                        clickCounter.innerText = 'Clicks: ' + clicks;
+                    });
+                } else {
+                    insufficientClicks.style.display = 'block';
+                    setTimeout(function() {
+                        insufficientClicks.style.display = 'none';
+                    }, 2000);
+                }
+            });
+
+            var upgrade = document.createElement('div');
+            upgrade.className = 'upgrade';
+            upgrade.innerText = name + ' (Cost: ' + cost + ')';
+            upgradeContainer.appendChild(upgrade);
+            upgradeList.appendChild(upgradeContainer);
+        }
+
+        createUpgrade('Upgrade 1', 10, 1);
+        createUpgrade('Upgrade 2', 50, 2);
+        createUpgrade('Upgrade 3', 100, 3);
+
+        function createSmoke() {
+            var smoke = document.createElement('div');
+            smoke.className = 'smoke';
+            smoke.style.top = Math.random() * 100 + '%';
+            smoke.style.left = Math.random() * 100 + '%';
+            smoke.style.width = Math.random() * 20 + 'px';
+            smoke.style.height = smoke.style.width;
+            smoke.style.backgroundColor = 'rgba(255, 255, 255, ' + (Math.random() * 0.5 + 0.5) + ')';
+            smoke.style.animationDuration = Math.random() * 5 + 's';
+            document.getElementById('game-container').appendChild(smoke);
+            setTimeout(function() {
+                smoke.remove();
+            }, 5000);
+        }
+
+        setInterval(createSmoke, 1000);
+    </script>
+</body>
+</html>
