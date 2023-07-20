@@ -312,7 +312,55 @@
             cursor: pointer;
         }
 		
-
+		@media (max-width: 600px) {
+			body {
+				font-size: 14px;
+			}
+			
+			#planet {
+				width: 150px;
+				height: 150px;
+			}
+			
+			#click-counter {
+				font-size: 16px;
+			}
+			
+			#upgrade-container {
+				width: 150px;
+			}
+			
+			#achievements-container {
+				width: 150px;
+			}
+			
+			.upgrade-container {
+				font-size: 12px;
+			}
+			
+			.achievement {
+				font-size: 14px;
+			}
+			
+			.achievement-description {
+				font-size: 12px;
+			}
+			
+			#shop-toggle,
+			#achievements-toggle {
+				font-size: 14px;
+				padding: 8px;
+			}
+			
+			.modal-content {
+				width: 90%;
+				margin: 10% auto;
+			}
+			
+			.close {
+				font-size: 24px;
+			}
+		}
     </style>
 </head>
 <body>
@@ -327,7 +375,7 @@
         <div id="upgrade-container" style="display: none;">
             <h2>Upgrades</h2>
             <div id="upgrade-list"></div>
-        </div>
+        </div>		
         <div id="achievements-container" style="display: none;">
             <h2>Achievements</h2>
             <div id="achievements-list"></div>
@@ -341,7 +389,8 @@
 				<p id="achievement-modal-description"></p>
 			</div>
 		</div>
-        <div class="insufficient-clicks">Insufficient clicks!</div>
+        <div class="insufficient-clicks">Insufficient clicks!</div>	
+
     </div>
 	
     <script>
