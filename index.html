@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Cyber Clicker 2099</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
         body {
             background-color: #000;
@@ -29,33 +30,10 @@
         #planet {
             width: 200px;
             height: 200px;
-            background-color: #0f0;
-            border-radius: 50%;
-            animation: pulse 5s infinite alternate, change-color 5s infinite;
-        }
-        
-        @keyframes change-color {
-            0% {
-                background-color: #0f0;
-            }
-            50% {
-                background-color: #19e619;
-            }
-            100% {
-                background-color: #0f0;
-            }
-        }
-        
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 0 10px #0f0;
-            }
-            100% {
-                transform: scale(1.1);
-                box-shadow: 0 0 20px #0f0;
-            }
-        }
+            background-image: url('planet.png');
+		    background-size: cover;
+        }        
+
         
         #click-counter-container {
             position: absolute;
@@ -69,7 +47,7 @@
             background-color: rgba(0, 0, 0, 0.5);
             padding: 5px 10px;
             border-radius: 20px;
-            font-size: 18px;
+            font-size: 18px;			
         }
         
         #upgrade-container {
@@ -161,10 +139,12 @@
         }
         
         #shop-toggle {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            padding: 10px;
+			position: absolute;
+			bottom: 10px;
+			left: -7px;
+			padding: 10px;
+			padding-left: 85px;
+			padding-right: 100px;
             background-color: #333;
             color: #fff;
             border: none;
@@ -204,6 +184,7 @@
             color: #0f0;
             font-size: 18px;
             margin-bottom: 10px;
+			text-align: right;
         }
         
         .achievement-container {
@@ -240,8 +221,10 @@
         #achievements-toggle {
             position: absolute;
             bottom: 10px;
-            right: 10px;
-            padding: 10px;
+			right: -5px;
+			padding: 10px;
+			padding-left: 35px;
+			padding-right: 53px;
             background-color: #333;
             color: #fff;
             border: none;
@@ -250,6 +233,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 16px;
             text-transform: uppercase;
+			text-align: center;
             letter-spacing: 2px;
             transition: background-color 0.3s;
         }
@@ -392,9 +376,10 @@
         <div class="insufficient-clicks">Insufficient clicks!</div>	
 
     </div>
-	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
     <script>
         var clicks = 0;
+		var maxClicks = 6;
         var clickCounter = document.getElementById('click-counter');
         var planet = document.getElementById('planet');
         var upgradeList = document.getElementById('upgrade-list');
@@ -407,6 +392,10 @@
         var achievementsContainer = document.getElementById('achievements-container');
         var achievementsButton = document.getElementById('achievements-toggle');
         var achievementCount = 0;
+
+		var clickSound = new Howl({
+			src: ['clicksound.mp3']
+		});
 
         function createAchievement(name, description) {
 			var achievementContainer = document.createElement('div');
@@ -468,26 +457,38 @@
             } else {
                 upgradeContainer.style.display = 'none';
             }
-        });
+        });		
 
-		// Закрытие модального окна при нажатии на "крестик"
         var closeBtn = document.getElementsByClassName('close')[0];
+		
         closeBtn.addEventListener('click', function() {
             var modal = document.getElementById('achievement-modal');
             modal.style.display = 'none';
         });
 
+
         planet.addEventListener('click', function(event) {
             smokeActive = true;
+			
             clicks += clickMultiplier;
-            clickCounter.innerText = 'Clicks: ' + clicks;
+            clickCounter.innerText = 'Clicks: ' + clicks;		
+
+			//clickSound.play();	
+			
             if (clicks === 100) {
-                createAchievement('Click Master', 'You have clicked the planet 100 times!');
+                createAchievement('One cliker', 'You have clicked the planet 100 times!');
             }
             if (clicks === 200) {
-                createAchievement('Super Clicker', 'You have clicked the planet 1000 times!');
+                createAchievement('Oh.. ho ho.. pohel naxyi', 'You have clicked the planet 200 times!');
             }
+			
             var clickBubble = document.createElement('div');
+			
+			var clickBubbles = planet.getElementsByClassName('click-bubble');
+			if (clickBubbles.length >= maxClicks) {
+				clickBubbles[0].remove();
+			}
+			
             clickBubble.classList.add('click-bubble');
             clickBubble.innerText = '+' + (clickMultiplier > 1 ? clickMultiplier : '') + clicks;
 
