@@ -1,15 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="500" height="100">
-  <style>
-    @keyframes neon {
-      0%, 100% { text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF; }
-      50% { text-shadow: 0 0 20px #00FFFF, 0 0 30px #00FFFF, 0 0 40px #00FFFF; }
-    }
-    .title {
-      font-family: 'Courier New';
-      font-size: 40px;
-      fill: #00FFFF;
-      animation: neon 2s ease-in-out infinite;
-    }
-  </style>
-  <text x="50%" y="50%" text-anchor="middle" class="title">Cyber Clicker 2099</text>
-</svg>
+<div align="center">
+  <img src="space.gif" alt="Space Background" width="100%">
+
+  <h1 align="center">
+    <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=40&pause=1000&color=00FFFF&center=true&vCenter=true&width=435&lines=Cyber+Clicker+2099" alt="Typing SVG" />
+  </h1>
+</div>
