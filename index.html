@@ -1,568 +1,265 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
     <title>Cyber Clicker 2099</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            overflow: hidden;
+        * {
             user-select: none;
-			cursor: crosshair;
+        }
+        body {
+            margin: 0;
+            background: linear-gradient(45deg, #0b0b2b, #1a1a4f);
+            color: #8f8fff;
+            font-family: 'Courier New', monospace;
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            min-height: 100vh;
         }
         
-        #game-container {
-            position: relative;
-            width: 100%;
+        .side-panel {
+            background: rgba(13, 13, 48, 0.7);
+            padding: 20px;
+            border-right: 1px solid #4444ff;
+            overflow-y: auto;
             height: 100vh;
         }
         
-        #planet-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .right-panel {
+            background: rgba(13, 13, 48, 0.7);
+            padding: 20px;
+            border-left: 1px solid #4444ff;
+            overflow-y: auto;
+            height: 100vh;
         }
-        
-        #planet {
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #clickArea {
             width: 200px;
             height: 200px;
-            background-image: url('planet.png');
-		    background-size: cover;
-        }        
-
-        
-        #click-counter-container {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        #click-counter {
-            display: inline-block;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 18px;			
-        }
-        
-        #upgrade-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 200px;
-            height: 100vh;
-            background-color: #222;
-            padding: 20px;
-            text-align: left;
-            overflow-y: auto;
-            border-top-right-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-        
-        #upgrade-container h2 {
-            color: #0f0;
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-        
-        .upgrade-container {
-            position: relative;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background-color: #333;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-        }
-        
-        .upgrade-container:hover {
-            background-color: #777;
-            transform: scale(1.05);
-        }
-        
-        .upgrade-container:active {
-            background-color: #999;
-            transform: scale(0.95);
-        }
-        
-        .upgrade {
-            color: #ff0;
-            font-size: 12px;
-            margin-bottom: 5px;
-            cursor: pointer;
-        }
-        
-        .insufficient-clicks {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            background-color: rgba(255, 0, 0, 0.7);
-            padding: 4px;
-            font-size: 18px;
-            color: #fff;
-            display: none;
-        }
-        
-        .smoke {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 10px;
-            height: 10px;
-            background-color: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
-            animation: smoke-move linear 5s;
-            opacity: 0;
+            background: radial-gradient(circle, #1e3b8a, #0a1f4d);
+            box-shadow: 0 0 20px #4444ff;
+            position: relative;
+            transition: all 0.1s;
         }
-        
-        .click-bubble {
+
+        #clickArea:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 30px #6666ff;
+        }
+
+        .click-number {
             position: absolute;
+            color: #00ffff;
             font-size: 20px;
-            color: white;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            text-shadow: 0 0 5px #00ffff;
         }
-        
-        @keyframes smoke-move {
+
+        @keyframes floatUp {
             0% {
-                transform: scale(1);
                 opacity: 1;
+                transform: translateY(0);
             }
             100% {
-                transform: scale(2);
                 opacity: 0;
+                transform: translateY(-100px);
             }
         }
-        
-        #shop-toggle {
-			position: absolute;
-			bottom: 10px;
-			left: -7px;
-			padding: 10px;
-			padding-left: 85px;
-			padding-right: 100px;
-            background-color: #333;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: background-color 0.3s;
+
+        #score {
+            font-size: 24px;
+            margin: 20px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
         }
-        
-        #shop-toggle:hover {
-            background-color: #666;
-        }
-        
-        #shop-toggle:active {
-            background-color: #999;
-            transform: scale(0.95);
-        }
-        
-        #achievements-container {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 200px;
-            height: 100vh;
-            background-color: #222;
-            padding: 20px;
-            text-align: left;
-            overflow-y: auto;
-            border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-        }
-        
-        #achievements-container h2 {
-            color: #0f0;
-            font-size: 18px;
-            margin-bottom: 10px;
-			text-align: right;
-        }
-        
-        .achievement-container {
-            position: relative;
+
+        .upgrade-item {
+            background: rgba(30, 59, 138, 0.3);
+            margin: 10px 0;
             padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background-color: #333;
-            transition: background-color 0.3s, transform 0.3s;
-            cursor: pointer;
-        }
-        
-        .achievement-container:hover {
-            background-color: #777;
-            transform: scale(1.05);
-        }
-        
-        .achievement-container:active {
-            background-color: #999;
-            transform: scale(0.95);
-        }
-        
-        .achievement {
-            color: #ff0;
-            font-size: 16px;
-            margin-bottom: 5px;
-        }
-        
-        .achievement-description {
-            color: #fff;
-            font-size: 14px;
-        }
-        
-        #achievements-toggle {
-            position: absolute;
-            bottom: 10px;
-			right: -5px;
-			padding: 10px;
-			padding-left: 35px;
-			padding-right: 53px;
-            background-color: #333;
-            color: #fff;
-            border: none;
+            border: 1px solid #4444ff;
             border-radius: 5px;
             cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            text-transform: uppercase;
-			text-align: center;
-            letter-spacing: 2px;
-            transition: background-color 0.3s;
+            transition: all 0.2s;
         }
-        
-        #achievements-toggle:hover {
-            background-color: #666;
+
+        .upgrade-item:hover {
+            background: rgba(30, 59, 138, 0.5);
         }
-        
-        #achievements-toggle:active {
-            background-color: #999;
-            transform: scale(0.95);
+
+        .achievement {
+            background: rgba(30, 59, 138, 0.3);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #4444ff;
+            border-radius: 5px;
+            opacity: 0.5;
         }
-        
-        .new-achievement {
-            position: relative;
+
+        .achievement.unlocked {
+            opacity: 1;
+            border-color: #00ffff;
         }
-        
-        .new-achievement::after {
-            content: attr(data-count);
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: #ff0000;
-            color: #ffffff;
-            font-size: 12px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 50%;
+
+        h1, h2 {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
         }
-		
-		 .modal {
-            display: none;
+           .video-background {
             position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            filter: brightness(0.5);
         }
-
-        .modal-content {
-            background-color:#222;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-			border-top-left-radius: 20px;
-            border-bottom-left-radius: 20px;
-			border-bottom-right-radius: 20px;
-			border-top-right-radius: 20px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-		
-		@media (max-width: 600px) {
-			body {
-				font-size: 14px;
-			}
-			
-			#planet {
-				width: 150px;
-				height: 150px;
-			}
-			
-			#click-counter {
-				font-size: 16px;
-			}
-			
-			#upgrade-container {
-				width: 150px;
-			}
-			
-			#achievements-container {
-				width: 150px;
-			}
-			
-			.upgrade-container {
-				font-size: 12px;
-			}
-			
-			.achievement {
-				font-size: 14px;
-			}
-			
-			.achievement-description {
-				font-size: 12px;
-			}
-			
-			#shop-toggle,
-			#achievements-toggle {
-				font-size: 14px;
-				padding: 8px;
-			}
-			
-			.modal-content {
-				width: 90%;
-				margin: 10% auto;
-			}
-			
-			.close {
-				font-size: 24px;
-			}
-		}
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="planet-container">
-            <div id="planet"></div>
-            <div id="clicks-container"></div>
+    <video autoplay muted loop class="video-background">
+        <source src="space.mp4" type="video/mp4">
+    </video>
+    <div class="side-panel">
+        <h2>Улучшения</h2>
+        <div class="upgrade-item">
+            Автокликер (100 кр.)
+            <br>+1 кр./сек
         </div>
-        <div id="click-counter-container">
-            <div id="click-counter">Clicks: 0</div>
+        <div class="upgrade-item">
+            Космический майнер (500 кр.)
+            <br>+5 кр./сек
         </div>
-        <div id="upgrade-container" style="display: none;">
-            <h2>Upgrades</h2>
-            <div id="upgrade-list"></div>
-        </div>		
-        <div id="achievements-container" style="display: none;">
-            <h2>Achievements</h2>
-            <div id="achievements-list"></div>
+        <div class="upgrade-item">
+            Квантовый ускоритель (1000 кр.)
+            <br>x2 к кликам
         </div>
-        <button id="shop-toggle">Shop</button>
-        <button id="achievements-toggle">Achievements</button>
-		<div id="achievement-modal" class="modal">
-			<div class="modal-content">
-				<span class="close">&times;</span>
-				<h2 id="achievement-modal-title"></h2>
-				<p id="achievement-modal-description"></p>
-			</div>
-		</div>
-        <div class="insufficient-clicks">Insufficient clicks!</div>	
-
+        <div class="upgrade-item">
+            Нейронный усилитель (2500 кр.)
+            <br>+10 кр./сек
+        </div>
+        <div class="upgrade-item">
+            Темпоральный модификатор (5000 кр.)
+            <br>x3 к кликам
+        </div>
+        <div class="upgrade-item">
+            Межзвездный комплекс (10000 кр.)
+            <br>+50 кр./сек
+        </div>
+        <div class="upgrade-item">
+            Чёрная дыра (25000 кр.)
+            <br>x5 к кликам
+        </div>
+        <div class="upgrade-item">
+            Галактический синтезатор (50000 кр.)
+            <br>+200 кр./сек
+        </div>
     </div>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+
+    <div class="main-content">
+        <div id="score">Кредиты: <span id="credits">0</span></div>
+        <div id="clickArea"></div>
+    </div>
+
+    <div class="right-panel">
+        <h2>Достижения</h2>
+        <div class="achievement">
+            Первые шаги
+            <br>Заработать 100 кредитов
+        </div>
+        <div class="achievement">
+            Космический магнат
+            <br>Заработать 1000 кредитов
+        </div>
+        <div class="achievement">
+            Властелин галактики
+            <br>Заработать 10000 кредитов
+        </div>
+        <div class="achievement">
+            Межзвездный император
+            <br>Заработать 50000 кредитов
+        </div>
+        <div class="achievement">
+            Повелитель времени
+            <br>Купить темпоральный модификатор
+        </div>
+        <div class="achievement">
+            Властелин пустоты
+            <br>Купить чёрную дыру
+        </div>
+        <div class="achievement">
+            Быстрые пальцы
+            <br>Сделать 100 кликов за 10 секунд
+        </div>
+        <div class="achievement">
+            Коллекционер
+            <br>Купить все улучшения
+        </div>
+        <div class="achievement">
+            Миллиардер
+            <br>Заработать 1000000 кредитов
+        </div>
+    </div>
     <script>
-        var clicks = 0;
-		var maxClicks = 6;
-        var clickCounter = document.getElementById('click-counter');
-        var planet = document.getElementById('planet');
-        var upgradeList = document.getElementById('upgrade-list');
-        var clicksContainer = document.getElementById('clicks-container');
-        var insufficientClicks = document.querySelector('.insufficient-clicks');
-        var clickMultiplier = 1;
-        var smokeActive = false;
-        var shopToggle = document.getElementById('shop-toggle');
-        var upgradeContainer = document.getElementById('upgrade-container');
-        var achievementsContainer = document.getElementById('achievements-container');
-        var achievementsButton = document.getElementById('achievements-toggle');
-        var achievementCount = 0;
+        let credits = 0;
+        const creditsDisplay = document.getElementById('credits');
+        const clickArea = document.getElementById('clickArea');
 
-		var clickSound = new Howl({
-			src: ['clicksound.mp3']
-		});
-
-        function createAchievement(name, description) {
-			var achievementContainer = document.createElement('div');
-			achievementContainer.className = 'achievement-container';
-			var achievement = document.createElement('div');
-			achievement.className = 'achievement';
-			achievement.innerText = name;
-			achievement.dataset.description = description;
-			achievementContainer.appendChild(achievement);
-			document.getElementById('achievements-list').appendChild(achievementContainer);
-
-			achievement.addEventListener('click', function() {
-                var modal = document.getElementById('achievement-modal');
-                var modalTitle = document.getElementById('achievement-modal-title');
-                var modalDescription = document.getElementById('achievement-modal-description');
-
-                modalTitle.textContent = name;
-                modalDescription.textContent = description;
-
-                modal.style.display = 'block';
-            });
-
-			achievementCount++;
-
-			let notification = achievementsButton.querySelector(".achievement-notification");
-			if (notification) {
-				let count = parseInt(notification.getAttribute("data-count"));
-				count++;
-				notification.setAttribute("data-count", count);
-
-			} else {
-				notification = document.createElement("span");
-				notification.classList.add("achievement-notification");
-				notification.setAttribute("data-count", "1");
-
-				achievementsButton.appendChild(notification);
-			}
-
-			if (!achievementsContainer.style.display || achievementsContainer.style.display === "none") {
-				notification.classList.add("new-achievement");
-			}
-		}
-
-        achievementsButton.addEventListener('click', function() {
-            if (achievementsContainer.style.display === 'none') {
-                achievementsContainer.style.display = 'block';
-                let notification = achievementsButton.querySelector(".achievement-notification");
-                if (notification) {
-                    notification.remove();
-                }
-            } else {
-                achievementsContainer.style.display = 'none';
-            }
-        });
-
-        shopToggle.addEventListener('click', function() {
-            if (upgradeContainer.style.display === 'none') {
-                upgradeContainer.style.display = 'block';
-            } else {
-                upgradeContainer.style.display = 'none';
-            }
-        });		
-
-        var closeBtn = document.getElementsByClassName('close')[0];
-		
-        closeBtn.addEventListener('click', function() {
-            var modal = document.getElementById('achievement-modal');
-            modal.style.display = 'none';
-        });
-
-
-        planet.addEventListener('click', function(event) {
-            smokeActive = true;
-			
-            clicks += clickMultiplier;
-            clickCounter.innerText = 'Clicks: ' + clicks;		
-
-			//clickSound.play();	
-			
-            if (clicks === 100) {
-                createAchievement('One cliker', 'You have clicked the planet 100 times!');
-            }
-            if (clicks === 200) {
-                createAchievement('Oh.. ho ho.. pohel naxyi', 'You have clicked the planet 200 times!');
-            }
-			
-            var clickBubble = document.createElement('div');
-			
-			var clickBubbles = planet.getElementsByClassName('click-bubble');
-			if (clickBubbles.length >= maxClicks) {
-				clickBubbles[0].remove();
-			}
-			
-            clickBubble.classList.add('click-bubble');
-            clickBubble.innerText = '+' + (clickMultiplier > 1 ? clickMultiplier : '') + clicks;
-
-            var planetRect = planet.getBoundingClientRect();
-            var x = Math.random() * planetRect.width - planetRect.width / 2;
-            var y = Math.random() * planetRect.height - planetRect.height / 2;
-            clickBubble.style.left = event.clientX - planetRect.left + x + 'px';
-            clickBubble.style.top = event.clientY - planetRect.top + y + 'px';
-
-            planet.appendChild(clickBubble);
-
-            setTimeout(function() {
-                clickBubble.remove();
-            }, 2000);
-        });
-
-        function createUpgrade(name, cost, multiplier) {
-            var upgradeContainer = document.createElement('div');
-            upgradeContainer.className = 'upgrade-container';
-            upgradeContainer.addEventListener('click', function() {
-                if (clicks >= cost) {
-                    clicks -= cost;
-                    clickCounter.innerText = 'Clicks: ' + clicks;
-                    cost *= 2;
-                    upgrade.innerText = name + ' (Cost: ' + cost + ')';
-                    clickMultiplier = multiplier;
-                    planet.addEventListener('click', function() {
-                        clicks += clickMultiplier;
-                        clickCounter.innerText = 'Clicks: ' + clicks;
-                    });
-                } else {
-                    insufficientClicks.style.display = 'block';
-                    setTimeout(function() {
-                        insufficientClicks.style.display = 'none';
-                    }, 2000);
-                }
-            });
-            var upgrade = document.createElement('div');
-            upgrade.className = 'upgrade';
-            upgrade.innerText = name + ' (Cost: ' + cost + ')';
-            upgradeContainer.appendChild(upgrade);
-            upgradeList.appendChild(upgradeContainer);
+        function checkAchievements() {
+            const achievements = document.querySelectorAll('.achievement');
+            if (credits >= 100) achievements[0].classList.add('unlocked');
+            if (credits >= 1000) achievements[1].classList.add('unlocked');
+            if (credits >= 10000) achievements[2].classList.add('unlocked');
+            if (credits >= 50000) achievements[3].classList.add('unlocked');
+            if (credits >= 1000000) achievements[8].classList.add('unlocked');
         }
 
-        createUpgrade('Upgrade 1 [ x2]', 100, 2);
-        createUpgrade('Upgrade 2 [ x4]', 5000, 3);
-        createUpgrade('Upgrade 3 [ x8]', 100000, 4);
-        createUpgrade('Upgrade 4 [ x16]', 50000000, 5);
-
-        function createSmoke() {
-            if (smokeActive) {
-                var smoke = document.createElement('div');
-                smoke.className = 'smoke';
-                smoke.style.top = Math.random() * 100 + '%';
-                smoke.style.left = Math.random() * 100 + '%';
-                smoke.style.width = Math.random() * 20 + 'px';
-                smoke.style.height = smoke.style.width;
-                smoke.style.backgroundColor = 'rgba(255, 255, 255, ' + (Math.random() * 0.5 + 0.5) + ')';
-                smoke.style.animationDuration = Math.random() * 5 + 's';
-                document.getElementById('game-container').appendChild(smoke);
-                setTimeout(function() {
-                    smoke.remove();
-                }, 5000);
-            }
+        function createFloatingNumber(x, y) {
+            const elem = document.createElement('div');
+            elem.className = 'click-number';
+            elem.textContent = '+1';
+            elem.style.left = x + 'px';
+            elem.style.top = y + 'px';
+            clickArea.appendChild(elem);
+            
+            setTimeout(() => {
+                elem.remove();
+            }, 1000);
         }
 
-        setInterval(function() {
-            if (smokeActive) {
-                createSmoke();
-            }
-            smokeActive = false;
-        }, 1000);
+        clickArea.addEventListener('click', (e) => {
+            credits++;
+            creditsDisplay.textContent = credits;
+            
+            // Получаем координаты клика относительно clickArea
+            const rect = clickArea.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            createFloatingNumber(x, y);
+            
+            // Проверяем достижения
+            checkAchievements();
+        });
 
-        setInterval(createSmoke, 10000);
+        function checkAchievements() {
+            const achievements = document.querySelectorAll('.achievement');
+            if (credits >= 100) achievements[0].classList.add('unlocked');
+            if (credits >= 1000) achievements[1].classList.add('unlocked');
+            if (credits >= 10000) achievements[2].classList.add('unlocked');
+        }
     </script>
 </body>
 </html>
